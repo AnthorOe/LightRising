@@ -1,22 +1,19 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
+# index.cgi
+print "Content-type: text/html\r\n\r\n"
+require 'rubygems'
 require 'cgi'
 require 'cgi/session'
 load 'functions.cgi'
 $cgi = CGI.new
 
 UserID = get_validated_id
-if UserID != false
-  print "Content-type: text/html\r\n\r\n"
-else
-  puts $cgi.header('Location'=>'index.cgi?msg=bad_pw')
-  exit
-end
 $user = User.new(UserID)
 
 def input_action(action)
   case action
-    when 'buy' then buy_skill(UserID, $params['skill'], $params['magic'])
-    when 'sell' then sell_skill(UserID, $params['skill'], $params['magic'])
+    when 'buy' then buy_skill(UserID, $params['skill'])
+    when 'sell' then sell_skill(UserID, $params['skill'])
     else ""
   end
 end
@@ -36,13 +33,18 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <link rel="icon" 
       type="image/png" 
       href="images/favicon.ico">
-<title>Shintolin - Skills</title>
-<link rel="stylesheet" type="text/css" href="shintolin.css" />
+<title>Light Rising - Skills</title>
+<link rel="stylesheet" type="text/css" href="lightrising.css" />
+    
 </head>
-<body>
+<body style="background:#cccccc">
+
+<div class="bigbox" style="font-size:90%;background:#cccccc">
+
 <h1>Skills</h1>'
-print "You have learned #{$user.level} out of a maximum of #{Max_Level} skills.<br>"
+print "You have learned #{$user.level} out of a maximum of #{Max_Level} skills.<br> Please note: if you sell a skill you will not receive back any of the XP that you paid for it."
 print'<hr>
+
 <a class="buttonlink" href="game.cgi">Return</a>
 <hr>
 '
@@ -54,5 +56,6 @@ print Warrior_Skills
 
 print '<br><br>
 <a class="buttonlink" href="game.cgi">Return</a>
+</div>
 </body>
 </html>'

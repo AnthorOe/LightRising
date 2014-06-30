@@ -1,13 +1,14 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
 print "Content-type: text/html\r\n\r\n"
 require 'cgi'
 require 'cgi/session'
 load 'functions.cgi'
 $cgi = CGI.new
 
-size = 10
-xs = (-5..5).map {|x| x * size}
-ys = (-5..5).map {|y| y * size}
+
+size = 20
+xs = (-10..10).map {|x| x * size}
+ys = (-10..10).map {|y| y * size}
 
 $map = '<table>'
 
@@ -24,7 +25,7 @@ ys.each do
     most_common = terrains.index(terrains.values.max)
     image = db_field(:terrain, most_common, :image)
     image = image[:default] if image.kind_of? Hash
-    image = db_field(:terrain, :wilderness, :image) if image == nil
+    image = db_field(:terrain, :dead_space, :image) if image == nil
 
     $map += "\n<td class=\"map\" " +
     "style=\"background-image:url('#{Image_Folder + image}')\" " +
@@ -45,20 +46,22 @@ end
 $map += '</table>'
 
 
-
 puts <<ENDTEXT
 <html>
-<head><title>Shintolin - World</title>
-<link rel="stylesheet" type="text/css" href="shintolin.css" />
+<head><title>Light Rising - Galactic Map</title>
+<link rel="stylesheet" type="text/css" href="lightrising.css" />
 </head>
 <body>
-<h1>Map</h1>
+<h1>Galactic Map - A Currently Malfunctioning Map of the Galaxy</h1>
 <hr>
 <a class="buttonlink" href="game.cgi">Return</a>
 <hr>
 <div class="gamebox-light">
 #{$map}
 </div>
+<hr>
+<a class="buttonlink" href="game.cgi">Return</a>
+<hr>
 </body>
 </html>
 ENDTEXT

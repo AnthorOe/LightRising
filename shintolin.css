@@ -6,7 +6,7 @@ text-decoration: none
 }
 body 
 {
-background: #d0d0b0;
+background: #848484;
 font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif
 }
 form
@@ -17,18 +17,18 @@ padding: 0px 0px 0px 0px;
 }
 hr
 {
-color:#b8b890;
+color:#4e4e4e;
 }
 img
 {
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 background-image: url('images/parchmentbg_dark.jpg');
 }
 input
 {
 color: #000;
-background: #99ccff;
-border: 2px outset #ccdaff;
+background: #d4d4d4;
+border: 2px outset #a8a8a8;
 font-size: 0.8em%;
 font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
 padding: 1px 2px 1px 2px;
@@ -71,8 +71,8 @@ border:0px;
 textarea
 {
 color: #000;
-background: #ffffff;
-border: 1px outset #aaaaaa;
+background: #d0d0d0;
+border: 1px outset #4e4e4e;
 font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
 margin-bottom: 1px;
 margin-top: 1px
@@ -85,7 +85,7 @@ left:543px;
 }
 .beigebox
 {
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 background-image: url('images/parchmentbg_dark.jpg');
 padding:4px;
 width:15em;
@@ -94,7 +94,7 @@ width:15em;
 {
 width:1126px;
 height:700px;
-background:#d8d8b8
+background:#848484
 }
 .bought
 {
@@ -107,8 +107,8 @@ color:#777799
 .buttonlink
 {
 color: #000;
-background: #99ccff;
-border: 2px outset #ccdaff;
+background: #d0d0d0;
+border: 2px outset #4e4e4e;
 font-size: 0.8em;
 font-weight: normal;
 font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
@@ -128,14 +128,14 @@ top: 2px;
 .gamebox
 {
 padding:2px;
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 background-image: url('images/parchmentbg_dark.jpg');
 text-align: left;
 }
 .gamebox-light
 {
 padding:2px;
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 background-image: url('images/parchmentbg.jpg');
 text-align: left;
 }
@@ -157,7 +157,7 @@ margin-left: 80px;
 }
 .infobox
 {
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 width:36em;
 }
 .infotable
@@ -175,21 +175,21 @@ width:10em;
 width:520px;
 text-align:center;
 font-size:130%;
-background:#cccc99;
+background:#d0d0d0;
 margin-bottom:0px;
 margin-top:0px;
 opacity:.65
 }
 .map
 {
-postion: absolute;
 width: 520px;
-border:thick solid #c8c8a0;
+border:thick solid #4e4e4e;
 background-image: url('images/parchmentbg.jpg');
 }
+
 .mapdata
 {
-font-size: 80%;
+font-size: 75%;
 background: #d0d0a0;
 margin:0px;
 padding: 0px 2px 0px 2px;
@@ -198,9 +198,9 @@ top: 10px;
 }
 .movebutton
 {
-font-size:70%;
-width: 60px;
-height: 24px;
+font-size: 60%;
+width: 64px;
+height: 20px;
 margin: 0px;
 position: relative;
 top: 2px;
@@ -259,35 +259,6 @@ color:#407395
 {
 color:#902020
 }
-.contact3
-{
-color:#663399
-}
-.contact4
-{
-color:#996600
-}
-.contact5
-{
-color:#445044
-}
-.contact6
-{
-color:#fafbff
-}
-.contact7
-{
-color:#330000
-}
-.contact8
-{
-color:#6f850b
-}
-.contact255
-{
-color:#CC6699
-}
-
 .ipwarning
 {
 font-weight:bold;

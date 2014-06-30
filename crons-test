@@ -1,0 +1,6 @@
+#!/usr/local/bin/ruby -w
+
+load 'functions-tick.rb'
+puts tick_restore_ap
+puts tick_campfires
+puts tick_move_animals

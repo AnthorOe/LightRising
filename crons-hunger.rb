@@ -1,5 +1,4 @@
-#!/usr/bin/ruby
-print "Content-type: text/html\r\n\r\n"
+#!/usr/local/bin/ruby -w
 
-load '/var/www/shn/functions-tick.rb'
+load '/home/content/a/n/t/anthor/html/lr/game/functions-tick.rb'
 puts tick_hunger

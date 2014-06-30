@@ -1,14 +1,45 @@
+Light Rising is my heavily customized version of the open source persistent browser-based multiplayer game Shintolin.
+
+This software is made available as-is, and without Warranty of any kind. 
+
+Included below are the original author's instructions, and information regarding the open-source license.
+
+All changes made to the code are available under the existing open-source license, the GNU Affero General Public License (see License info at bottom of this file).
+
+The graphical images (images folder contents) and any text descriptions of Light Rising locations, player or non-player characters, regions, areas, items, etc. in the Data.rb file (not the code) are made available under the Creative Commons Attribution CC BY License.
+
+Which means you can use them in your own game as long as you link back to LightRising.com as the original author/artist.
+
+This license lets others distribute, remix, tweak, and build upon your work, even commercially, as long as they credit you for the original creation. This is the most accommodating of licenses offered. Recommended for maximum dissemination and use of licensed materials.
+
+http://creativecommons.org/licenses/by/4.0/legalcode
+
+http://creativecommons.org/licenses/by/4.0/
+
+Instead of using the Shintolin db template, I'm including the customized Light Rising db file (albeit empty of data). It was a mysql 4.0 db, but has been recently upgraded to 5.5. You will need to create a new character and then add that character to the named users on any Admin files. You will also need to create a new map via the map editor (after adding your Admin username to the map editor file).
+
+I don't guarantee any response, but if you have any questions please email me at anthor@lightrising.com
+
+Graphical Images & Light Rising textual content are Copyright (c) LightRising.com & Anthor - 2014
+
+- - - - -
+
 So, you want to set up your own version of Shintolin?
 
 Shintolin runs as a bunch of CGI scripts, so it should work on any server with Apache, Ruby (1.8) and MySQL installed.
 
-You'll find a database template in dbtemplate.sql. You'll need to create a MySQL database called 'shintolin'; the command to import the data should be something like 'mysql -p shintolin < dbtemplate.sql'. If you want to check the import worked, open the MySQL prompt and type 'show tables;' - you should see 12 table names.
+You'll find a database template in dbtemplate.sql. You'll need to create a MySQL database called 'shintolin'; the command to import the data should be something like 'mysql -p shintolin < dbtemplate.sql'. If you want to check the 
+import worked, open the MySQL prompt and type 'show tables;' - you should see 12 table names.
 
-Getting Ruby to talk to MySQL is annoying. Really annoying. Follow the instructions on http://tmtm.org/en/mysql/ruby/ and see how you get on. It took me almost a whole day to get it to work (!) but that's because I'm a noob and used a package called XAMPP instead of installing Apache and MySQL seperately. The file 'mysql-connect.rb' handles the database connection for Shintolin, so make sure you change the settings there; in particular, 'root' should be changed for your username and '' with your password.
+Getting Ruby to talk to MySQL is annoying. Really annoying. Follow the instructions on http://tmtm.org/en/mysql/ruby/ and see how you get on. It took me almost a whole day to get it to work (!) but that's because I'm a noob and 
+used a package called XAMPP instead of installing Apache and MySQL seperately. The file 'mysql-connect.rb' handles the database connection for Shintolin, so make sure you change the settings there; in particular, 'root' should be 
+changed for your username and '' with your password.
 
-Shintolin isn't the best example of Ruby code; in particular, it's not very object-oriented, because I didn't properly understand object-orientation when I began working on version II of the game. There's probably a few other things I'd do differently now - still, you should see the orginal PHP version.
+Shintolin isn't the best example of Ruby code; in particular, it's not very object-oriented, because I didn't properly understand object-orientation when I began working on version II of the game. There's probably a few other 
+things I'd do differently now - still, you should see the orginal PHP version.
 
-The file test.rb might include a few failing tests; this doesn't neccesarily mean the game is broken. It's quite brittle in regards to the database (this is something that Ruby on Rails manages to fix, more or less, but it's method is complicated). Test coverage is also not very high, because I didn't start writing tests until very late into the project. Improving the testing framework might be a good way to get your head around the code base.
+The file test.rb might include a few failing tests; this doesn't neccesarily mean the game is broken. It's quite brittle in regards to the database (this is something that Ruby on Rails manages to fix, more or less, but it's 
+method is complicated). Test coverage is also not very high, because I didn't start writing tests until very late into the project. Improving the testing framework might be a good way to get your head around the code base.
 
 If your changes are good, I'm not averse to adding them to the master version of Shintolin. E-mail me at: allthatyousee AT gmail DOT com and I'll see what I can do.
 

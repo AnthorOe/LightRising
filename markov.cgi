@@ -1,8 +1,8 @@
-#!/usr/bin/ruby
-print "Content-type: text/html\r\n\r\n"
+#!/usr/local/bin/ruby -w
+require 'rubygems'
 require 'cgi'
 require 'cgi/session'
-load 'functions.cgi'
+load '/home/content/a/n/t/anthor/html/lr/game/functions.cgi'
 $cgi = CGI.new
 user_id = get_validated_id
 

@@ -1,0 +1,4 @@
+# canary
+MAILTO="anthor.oe@gmail.com"
+# 1 Restore AP
+0,15,30,45 * * * * /html/lr/game/crons-ap.rb

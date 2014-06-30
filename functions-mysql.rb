@@ -1,6 +1,6 @@
 def mysql_bounded_update(table, field, where_clause, change, bound=nil)
   if bound == nil
-    if change > 0 then bound = 1000000# an arbitrarily large number
+    if change > 0 then bound = 1000000000# an arbitrarily large number
     else bound = 0 end
   end
   bound = bound.to_i
@@ -39,9 +39,7 @@ def mysql_change_ap(user, change)
   if change > 0
     mysql_bounded_update('users','ap',user_id,change,Max_AP)
   else
-    mysql_bounded_update('users','ap',user_id,change,-Max_AP)
-    if $user.ap + change < -10 then ip_hit(user_id, $user.ap*10 + 90)
-    else ip_hit(user_id, -(change*10)-10) end
+    mysql_bounded_update('users','ap',user_id,change,-Max_AP)  
   end
 end
 
@@ -111,7 +109,7 @@ def mysql_change_stockpile(x, y, item_id, change)
       mysql_insert('stockpiles',
         {'x'=>x,'y'=>y,'item_id'=>item_id,'amount'=>change})
     else
-      # if trying to reduce items the stockpile doesn't have, 
+      # if trying to reduce items the stockpile/storage unit doesn't have, 
       # do nothing and return 0
       change = 0
     end
@@ -138,22 +136,22 @@ def mysql_get_messages(x, y, z, user)
   "OR `type` = 'slash_me' OR `type` = 'game' " +
   "OR `type` = 'visible_all')" +
   "AND `x` = '#{x}' AND `y` = '#{y}' AND `z` = '#{z}' " +
-  "AND (`time` + INTERVAL 1 MINUTE) > '#{user.lastaction}')" +
+  "AND (`time` + INTERVAL 24 HOUR) > '#{user.lastaction}')" +
 
   # shouted or distant at same x, y
   " OR ((`type` = 'shout' OR `type` = 'distant') AND " +
   "`x` = '#{x}' AND `y` = '#{y}'" +
-  "AND (`time` + INTERVAL 1 MINUTE) > '#{user.lastaction}')" +
+  "AND (`time` + INTERVAL 24 HOUR) > '#{user.lastaction}')" +
 
   # action targeted at player
   " OR (`type` = 'action' AND `target_id` = '#{user.mysql_id}'" +
-  "AND (`time` + INTERVAL 1 MINUTE) > '#{user.lastaction}')" +
+  "AND (`time` + INTERVAL 24 HOUR) > '#{user.lastaction}')" +
 
   # persistent messages at same x, y, z
   " OR (`type` = 'persistent' AND " +
   "`x` = '#{x}' AND `y` = '#{y}' AND `z` = '#{z}'" +
   "AND (`time` + INTERVAL 24 HOUR) > '#{user.lastaction}')" +
-  " ORDER BY `time`"
+  " ORDER BY `time` DESC"
 
   messages = $mysql.query(query)
 end
@@ -174,7 +172,7 @@ def mysql_give_xp (type, xp, user)
   end
   xp = rand_to_i(xp) if xp.kind_of? Float
   xp = xp.abs || 0
-  mysql_bounded_update('users', xp_field, user_id, +xp, 1000)
+  mysql_bounded_update('users', xp_field, user_id, +xp, 99999)
 end
 
 def mysql_insert(table, column_values_hash)
@@ -265,7 +263,7 @@ def mysql_tile(x, y)
   tile = mysql_row('grid',{'x'=>x,'y'=>y})
   if tile == nil
     tile = {'x'=>x,'y'=>y,'terrain'=>'3','region_id'=>'3', 'building_id'=>'0',
-      'hp'=>3,'building_hp'=>0}
+      'hp'=>'3','building_hp'=>'0'}
   end
   tile
 end
@@ -337,7 +335,7 @@ def mysql_where(clause, not_clause=nil)
     end
   else
     puts 'ERROR: argument to mysql_where_clause must be an integer or hash.'
-    where_clase = " WHERE FALSE"
+    where_clause = " WHERE FALSE"
   end
   where_clause
 end

@@ -1,18 +1,14 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
+# index.cgi
+print "Content-type: text/html\r\n\r\n"
+require 'rubygems'
 require 'cgi'
 require 'cgi/session'
 load 'functions.cgi'
 $cgi = CGI.new
 
 user_id = get_validated_id
-if user_id != false
-  $user = User.new(user_id)
-  print "Content-type: text/html\r\n\r\n"
-else
-  puts $cgi.header('Location'=>'index.cgi?msg=bad_pw')
-  exit
-end
-$user = User.new(user_id)
+$user = User.new(user_id) if user_id != false
 
 Map = 
 if has_skill?($user, :tracking)
@@ -27,8 +23,8 @@ puts <<ENDTEXT
 <link rel="icon" 
       type="image/png" 
       href="images/favicon.ico">
-<title>Shintolin - Map</title>
-<link rel="stylesheet" type="text/css" href="shintolin.css" />
+<title>Light Rising - Map</title>
+<link rel="stylesheet" type="text/css" href="lightrising.css" />
 </head>
 <body>
 <h1>Map</h1>

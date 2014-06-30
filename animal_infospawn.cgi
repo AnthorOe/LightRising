@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
 print "Content-type: text/html\r\n\r\n"
 load 'functions.cgi'
 

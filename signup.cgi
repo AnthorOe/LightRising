@@ -1,4 +1,6 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
+# index.cgi
+require 'rubygems'
 require 'cgi'
 load 'functions.cgi'
 $cgi = CGI.new
@@ -20,7 +22,7 @@ puts $cgi.header('Location'=>$return_page + '&msg=invalid_name')
   exit
 end
 
-if not $cgi['username'] =~ /^\s?[a-zA-Z0-9 .\-]*\s?$/
+if not $cgi['username'] =~ /^\s?[a-zA-ZäöüÅÄÖ0-9 .\-]*\s?$/
   puts $cgi.header('Location'=>$return_page + '&msg=invalid_name')
   exit
 end
@@ -43,9 +45,10 @@ end
 password = encrypt($cgi['password_1'])
 username = $cgi['username']
 settlement = Settlement.new($cgi['settlement'])
+# modified starting x,y to randomize only in a small area around x=1,y=1
 unless settlement.exists? && settlement.allow_new_users == 1
   settlement_id = 0
-  x, y = rand(40) - 20, rand(40) - 20
+  x, y = rand(2) - 2, rand(2) - 2
 else 
   settlement_id = settlement.mysql_id
   x = settlement.x + rand(5) - 2
@@ -53,19 +56,22 @@ else
 end
 
 mysql_insert('users',
-  {'name'=>username,'password'=>password,'x'=>x,'y'=>y})
+  {'name'=>username,'password'=>password,'x'=>x,'y'=>y,'locked'=>'1','accepted'=>'1'})
 
 id = mysql_row('users',{'name'=>username})['id']
 mysql_insert('accounts',
   {'id'=>id,'email'=>$cgi['email'],'joined'=>:Today,
-   'lastrevive'=>:Today, 'settlement_id'=> 0, 
-   'temp_sett_id'=>settlement_id, 'when_sett_joined' => :Now})
+     'lastrevive'=>:Today, 'settlement_id'=> 0, 
+	 'temp_sett_id'=>settlement_id, 'when_sett_joined' => :Now})
 
 if settlement_id != 0
   mysql_put_message('action',
   "$ACTOR have arrived at a settlement, however you must survive for a day before you are entitled to its privileges.", id, id)
-end
+end 
 
 mysql_change_inv(id, :noobcake, 9)
+mysql_change_inv(id, :poultice, 3)
+mysql_change_inv(id, :ballistic_knife, 1)
+mysql_change_inv(id, :laser_pistol, 1)
 puts $cgi.header('Location'=>
   $return_page + "&username=#{username}&msg=account_made")
