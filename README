@@ -18,6 +18,8 @@ http://creativecommons.org/licenses/by/4.0/
 
 Instead of using the Shintolin db template, I'm including the customized Light Rising db file (albeit empty of data). It was a mysql 4.0 db, but has been recently upgraded to 5.5. You will need to create a new character and then add that character to the named users on any Admin files. You will also need to create a new map via the map editor (after adding your Admin username to the map editor file).
 
+Also, note that there are literally thousands of changes to the code over five years, between the shintolin version, and the lightrising version, but due to problems with git I lost all intermediate tracked changes. So, if you really want to dive into see what's changed, you'll need to do comparisons of the original shintolin files against the new lightrising files.
+
 I don't guarantee any response, but if you have any questions please email me at anthor@lightrising.com
 
 Graphical Images & Light Rising textual content are Copyright (c) LightRising.com & Anthor - 2014
