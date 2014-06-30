@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
 print "Content-type: text/html\r\n\r\n"
 require 'cgi'
 require 'cgi/session'
@@ -6,43 +6,24 @@ load 'functions.cgi'
 $cgi = CGI.new
 
 def input_action(action)
-  if action != nil && ($params['magic'] != $user.magic)
-    puts "Error. Try again."
-    return
-  end
   case action
     when 'description'
       mysql_update('accounts', $user.mysql_id, 
         {'description' => insert_breaks(CGI::escapeHTML($params['text']))})
     when 'image'
       mysql_update('accounts', $user.mysql_id, 
-        {'image' => CGI::escapeHTML($params['text'])})
+        {'image' => CGI::escapeHTML($params['text'])})    
+    when 'corp_name'
+      mysql_update('accounts', $user.mysql_id, 
+        {'corp_name' => insert_breaks(CGI::escapeHTML($params['text']))}) 
+    when 'corp_desc'
+      mysql_update('accounts', $user.mysql_id, 
+        {'corp_desc' => insert_breaks(CGI::escapeHTML($params['text']))})          
+    when 'corp_image'
+      mysql_update('accounts', $user.mysql_id, 
+        {'corp_image' => CGI::escapeHTML($params['text'])})          
     else ''
   end
-end
-
-def change_contact(e_id,type) # modified from function in contacts.cgi
-  if $params['magic'] != $user.magic
-    return "Error. Try again."
-  end
-	query = "SELECT COUNT(*) FROM `enemies` WHERE `user_id` = #{$user.mysql_id}"
-	result = $mysql.query(query).fetch_hash
-	num_enemies = result['COUNT(*)'].to_i
-  if type <= 0
-    mysql_delete('enemies',{'user_id'=>$user.mysql_id, 'enemy_id'=>e_id}); return "Contact deleted."
-  elsif type > 255
-    return "Error. Contact type out of range (maximum 255)."
-  else
-    enemy = mysql_row('enemies',{'user_id'=>$user.mysql_id, 'enemy_id'=>e_id})
-    if enemy == nil
-      if num_enemies >= 50 then return "Contact list is full. Delete some contacts if you wish to add more."; end
-      mysql_insert('enemies',{'user_id'=>$user.mysql_id, 'enemy_id'=>e_id, 'enemy_type'=>type}); return "Contact added. Now using #{num_enemies+1}/50 contacts."
-    else 
-      if (enemy['enemy_type'].to_i == type) or (enemy['enemy_type'].to_i >=9 && type == 9) then return 'No change.'; end
-      mysql_update('enemies',{'user_id'=>$user.mysql_id, 'enemy_id'=>e_id}, {'enemy_type'=>type, 'updated'=>:Now}); return "Contact updated."
-    end
-  end
-
 end
 
 $params = $cgi.str_params
@@ -53,9 +34,7 @@ $user = User.new(user_id) if user_id != false
 if !profile.exists? then name = ''
 else name = profile.name end
 
-msg = ''
 input_action($params['action']) if $user == profile
-msg = change_contact($params['id'].to_i, $params['enemy'].to_i) if user_id != false && $params['action'] == "update_contact" && $params['enemy'] != ''
 # bug-fix: have to update profile reference as input_action may have
 # changed it
 profile = User.new($params['id'])
@@ -63,11 +42,8 @@ profile = User.new($params['id'])
 puts <<ENDTEXT
 <html>
 <head>
-<link rel="icon" 
-      type="image/png" 
-      href="images/favicon.ico">
-<title>Shintolin - #{name}</title>
-<link rel='stylesheet' type='text/css' href='shintolin.css' />
+<title>Light Rising - #{name}</title>
+<link rel='stylesheet' type='text/css' href='lightrising.css' />
 </head>
 <body>
 ENDTEXT
@@ -78,7 +54,16 @@ if !profile.exists?
 end
 
 puts <<ENDTEXT
-<h1 class='header'>#{name}</h1>
+
+<table>
+  <tr>
+<td colspan='2'>
+    <div class='beigebox' style='font-style:italic;width:984px'>
+    <h1 class='header'>#{name}</h1>
+<hr>
+
+</div>
+</td>
 
 <table>
   <tr>
@@ -93,82 +78,91 @@ if $user == profile
   puts <<ENDTEXT
   <td rowspan='2'>
   <div class='beigebox' style='width:25em'>
-  <form method='post' action='profile.cgi?id=#{$user.mysql_id}'>
+  <form method='post' action='profile.cgi'>
     Edit description:
     <br>
-    <textarea rows='7' cols='36' name='text'>#{$user.description.gsub("<br>", "\r")}</textarea>
+    <textarea rows='5' cols='40' name='text'>#{$user.description.gsub("<br>", "\r")}</textarea>
     <br><br>
     <input type='hidden' name='action' value='description' />
-    <input type='hidden' name='id' value='#{$user.mysql_id}' />
-    <input type="hidden" value="#{$user.magic}" name = "magic"> 
+    <input type='hidden' name='id' value='#{$user.mysql_id}' />   
     <input type='submit' value='Submit' />
   </form>
 
   <hr>
-  <form method='post' action='profile.cgi?id=#{$user.mysql_id}'>
+  <form method='post' action='profile.cgi'>
     Update image <i>(Enter image URL):</i>
     <br>
-    <input type='text' class='text' name='text' maxlength='100' style='width:300px' value='#{profile.image}'/>
+    <input type='text' class='text' name='text' maxlength='100' value='#{profile.image}'/>
     <input type='hidden' name='action' value='image' />
-    <input type='hidden' name='id' value='#{$user.mysql_id}' />
-    <input type="hidden" value="#{$user.magic}" name = "magic">
+    <input type='hidden' name='id' value='#{$user.mysql_id}' />   
     <input type='submit' value='Submit' />
     <br>
     <i>Images must be hosted on external sites. Offensive content will be removed.</i>
   </form>
+  <hr>
+    <form method='post' action='profile.cgi'>
+    Edit Corporation Name:
+    <br>
+    <textarea rows='1' cols='40' name='text'>#{$user.corp_name.gsub("<br>", "\r")}</textarea>
+    <br><br>
+    <input type='hidden' name='action' value='corp_name' />
+    <input type='hidden' name='id' value='#{$user.mysql_id}' />   
+    <input type='submit' value='Submit' />
+  </form>
+  
+  <hr>    
+      <form method='post' action='profile.cgi'>
+  Update Corporation image <i>(Enter image URL):</i>
+      <br>
+    <input type='text' class='text' name='text' maxlength='100' value='#{profile.corp_image}'/>
+    <input type='hidden' name='action' value='corp_image' />
+    <input type='hidden' name='id' value='#{$user.mysql_id}' />   
+    <input type='submit' value='Submit' />
+    <br>
+    <i>Images must be hosted on external sites. Offensive content will be removed.</i>
+  </form>
+  <hr>
+    <form method='post' action='profile.cgi'>
+    Edit Corporation Description:
+    <br>
+    <textarea rows='1' cols='40' name='text'>#{$user.corp_desc.gsub("<br>", "\r")}</textarea>
+    <br><br>
+    <input type='hidden' name='action' value='corp_desc' />
+    <input type='hidden' name='id' value='#{$user.mysql_id}' />   
+    <input type='submit' value='Submit' />
+  </form>
+
+  
   </div>
   </td>
 ENDTEXT
-elsif user_id != false
-  colors = [['#389038', '1', 'green'], ['#902020', '2', 'red'], ['#663399', '3', 'purple'], ['#996600', '4', 'orange'], ['#445044', '5', 'gray'], ['#fafbff', '6', 'white'], ['#330000; color:#f8fbec', '7', 'black'], ['#6f850b', '8', 'yellow-green'], ['#CC6699', '9', 'pink'], ['#c3b080', '', ''], ['#c3b080', '0', 'delete contact']]
-  result = mysql_row('enemies', {'user_id'=>$user.mysql_id, 'enemy_id'=>profile.mysql_id})
-  if result == nil
-    colors.pop # remove "delete contact" option
-    result = Hash.new
-    result['enemy_id'] = profile.mysql_id; result['enemy_type'] = ''
-  end
-  relation = $user.relation(profile).to_s
-  puts <<ENDTEXT
-<font class=#{relation}><b>*</b></font>
-<form action ="profile.cgi?id=#{profile.mysql_id}" method ="post">
-<input type="hidden" value="#{$user.magic}" name = "magic">
-<input type='hidden' name='action' value='update_contact'>
-<input type='hidden' name='id' value='#{profile.mysql_id}'>
-ENDTEXT
-  print '<select style="background-color:#c3b080; color:#203008;" name="enemy">'
-  colors.each {|color|
-    print '<option style="background-color:' + color[0] + ';" value="' +color[1] +'"'
-    if (color[1] ==  result['enemy_type']) or (color[1] == '9' and result['enemy_type'].to_i >= 9) then print ' selected ="yes"' end
-    puts '>' + color[2] + '</option>'
-}
-  puts '</select> <input type="submit" value="Set Contact"> </form> ' + "<font class=#{relation}>" + msg + "</font>"
 end
 
 puts <<ENDTEXT
   </tr>
+
   <tr>
     <td>
     <div class='beigebox'>
     <table>
 ENDTEXT
-puts "<tr><td><b><i>Donated!</i></b></td></tr>" if profile.donated?
-puts "<tr><td><b>"
+
 
 if $user == profile && profile.temp_sett_id != 0
 puts "Settlement (Pending):</td><td>"
 else
-puts "Settlement:</td><td>#{profile.settlement.link}"
+puts "Settlement:</td><td>#{profile.settlement.link}" 
 end
-
 if profile.temp_sett_id != 0
-  if $user == profile 
-    pending = mysql_select('settlements',{'id' => $user.temp_sett_id}).fetch_hash
-    puts "<a href=\"settlement.cgi?id=#{$user.temp_sett_id}\" " +
-      "class=\"neutral\" " +
-      ">#{pending['name']}</a>"
-  else puts "(Pending)"
-  end
-end
+   if $user == profile 
+     pending = mysql_select('settlements',{'id' => $user.temp_sett_id}).fetch_hash
+     puts "<a href=\"settlement.cgi?id=#{$user.temp_sett_id}\" " +
+       "class=\"neutral\" " +
+       ">#{pending['name']}</a>"
+   else puts "(Pending)"
+   end
+ end 
+
 puts <<ENDTEXT
 	</td>
       </tr>
@@ -183,10 +177,22 @@ ENDTEXT
 if profile.hp != 0
   puts "<tr><td><b>Alive since: </td><td>#{profile.lastrevive}</td></tr>"
 else
-  puts '<tr><td><b>Alive since: </td><td><i>Dazed</i></td></tr>'
+  puts '<tr><td><b>Alive since: </td><td><i>Dead/Spirit</i></td></tr>'
+end
+
+if profile.donated?
+  puts "<tr><td>          </td><td><b><i>Premium Member!</i></b></td></tr>" 
+end
+
+
+if profile.active != 0
+  puts "<tr><td>          </td><td><b>Active</td></tr>"
+else
+  puts "<tr><td>        </td><td><b>Inactive</td></tr>"
 end
 
 puts <<ENDTEXT
+
       <tr>
         <td><b>Frags: </td><td>#{profile.frags}</td>
       </tr>
@@ -204,11 +210,30 @@ puts <<ENDTEXT
     </td>
 
     <td>
-    <img style='max-width:300px; max-height:300px' src='#{profile.image}' alt='Portrait of #{profile.name}'/>
+    <img style='width:300px' src='#{profile.image}' alt='Portrait of #{profile.name}'/>
     </td>
   </tr>
-</table>
+  <table>
+  <tr>
+    <td colspan='2'>
+    <div class='beigebox' style='font-style:italic;width:35em'>
+    #{profile.corp_name}
+    </div>
+  </td>
+  </tr>  
+  <tr> 
+  <td>
+    <img style='width:300px' src='#{profile.corp_image}' alt='Corporation Image of #{profile.corp_name}'/>
+    </td></tr>
+  <tr>       
+  <td colspan='2'>
+    <div class='beigebox' style='font-style:italic;width:35em'>
+    #{profile.corp_desc}
+    </div>
+  </td>
+  </tr>
 
+</table>
 <hr>
 <a class='buttonlink' href='game.cgi'>Return</a>
 

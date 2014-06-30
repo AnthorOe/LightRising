@@ -1,5 +1,8 @@
-#!/usr/bin/ruby
-load '/var/www/shn/functions.cgi'
+#!/usr/local/bin/ruby -w -I /home/content/a/n/t/anthor/html/lr/game
+# index.cgi
+require 'rubygems'
+require 'cgi'
+load '/home/content/a/n/t/anthor/html/lr/game/functions.cgi'
 
 def tick_campfires
   campfire_tiles = mysql_select('grid',{'building_id'=>5})
@@ -12,7 +15,7 @@ def tick_campfires
 	  {'building_id'=>0,'building_hp'=>0})
 	mysql_insert('messages',{'x'=>tile['x'],'y'=>tile['y'],'z'=>'0',
 	  'type'=>'game',
-	  'message'=>'The campfire burned away to nothing'})
+	  'message'=>'The barrelfire burned away to nothing'})
 
       else
         mysql_update('grid',{'x'=>tile['x'],'y'=>tile['y']},
@@ -20,12 +23,12 @@ def tick_campfires
 	if tile['building_hp'] == '5'
 	  mysql_insert('messages',{'x'=>tile['x'],'y'=>tile['y'],'z'=>'0',
 	  'type'=>'game',
-	  'message'=>'The campfire began to get low'})	
+	  'message'=>'The barrelfire began to get low'})	
 	end
       end
     end
   }
-  'Campfires burned!'
+  "Barrelfires burned!"
 end
 
 def tick_change_leader
@@ -48,16 +51,16 @@ def tick_change_leader
 end
 
 def tick_settlement_membership
-  result = mysql_select('accounts',{'settlement_id' => 0},{'temp_sett_id' => 0})
-  result.each_hash do
+   result = mysql_select('accounts',{'settlement_id' => 0},{'temp_sett_id' => 0})
+   result.each_hash do
     |player|
     if Time.now - 86400 + 3600 <= Time.str_to_time(player['when_sett_joined']) then next end #23 hours
-    mysql_update('accounts',player['id'],{'settlement_id' => player['temp_sett_id']})
-    mysql_update('accounts',player['id'],{'temp_sett_id' => 0})
-    mysql_put_message('action',"$ACTOR, having made it through the day, are now entitled to the benefits of settlement membership.", player['id'], player['id'])
-  end
-  "Settlement membership updated!"
-end
+     mysql_update('accounts',player['id'],{'settlement_id' => player['temp_sett_id']})
+     mysql_update('accounts',player['id'],{'temp_sett_id' => 0})
+     mysql_put_message('action',"Having made it through the day, $ACTOR are now entitled to the benefits of settlement membership.", player['id'], player['id'])
+   end
+   "Settlement membership updated!"
+ end 
 
 def tick_damage_buildings
   regions = db_table(:region).values
@@ -68,14 +71,13 @@ def tick_damage_buildings
     tiles = mysql_select('grid',{'region_id'=>region[:id]},{'building_id'=>0})
     tiles.each_hash do
       |tile|
-      dmg = rand(15) - 5
+      dmg = rand(25)
       if dmg > 0
         building = Building.new(tile['x'],tile['y'])
 	next if building.special == :settlement
-    next if building.special == :ruins #prevents storm damage
-    if building.id == 17 then dmg = dmg - 3; next if dmg <= 0 end # 17 = walls-reduce dmg odds/amt
+        next if building.special == :ruins #prevents storm damage
 	destroy = deal_damage(dmg, building)
-	msg = "A storm blew across #{region[:name]}, " +
+	msg = "An ion storm blew across #{region[:name]}, " +
 	  "doing #{dmg} damage to #{building.a}" 
 	mysql_insert('messages',
 	  {'x'=>building.x,
@@ -86,7 +88,7 @@ def tick_damage_buildings
       end
     end
   end
-  "Huts blown away!"
+  puts "Emergency Shelters blown away!"
 end
 
 def tick_grow_fields
@@ -105,7 +107,7 @@ def tick_grow_fields
     mysql_bounded_update('grid', 'building_hp', 
       {'x'=>tile['x'], 'y'=>tile['y']}, +growth, 200)
   end  
-  'Fields grown!'
+  "Fields grown!"
 end
 
 def tick_hunger
@@ -162,36 +164,75 @@ def tick_hunger
       mysql_put_message('action',
        "$ACTOR, weakened by lack of food, lost <b>#{-hp_dmg} hp</b>",
         player['id'], player['id'])
-      if player['hp'].to_i + hp_dmg <= 0 # dazed from hunger
-        temp = mysql_select('accounts',{'id'=>player['id']}).fetch_hash
-        if temp['temp_sett_id'].to_i != 0
-          mysql_update('accounts', player['id'], {'temp_sett_id' =>0})
-          mysql_put_message('action','$ACTOR, dazed by hunger, have lost your pending settlement residency.',
-          player['id'].to_i,player['id'].to_i)
-        end
-      end
     end
     if maxhp_dmg != 0
       mysql_put_message('action',
        "$ACTOR, weakened by lack of food, lost <b>#{-maxhp_dmg} max hp</b>", 
          player['id'], player['id'])
+           if player['hp'].to_i + hp_dmg <= 0 # dazed from hunger
+            temp = mysql_select('accounts',{'id'=>player['id']}).fetch_hash
+           if temp['temp_sett_id'].to_i != 0
+            mysql_update('accounts', player['id'], {'temp_sett_id' =>0})
+            mysql_put_message('action','$ACTOR, dazed by hunger, have lost your pending settlement residency.',
+            player['id'].to_i,player['id'].to_i)
+         end
+      end 
     end
   end
 
-  'Hungry guys!'
+  "Hungry guys!"
+end
+
+def tick_enviro_dmg
+  query = "SELECT * FROM `users` WHERE " +
+    "`active` = '1' AND " +
+    "`z` = '0' AND " + "'hp' > '0'"
+  puts query
+  players = $mysql.query(query)
+  players.each_hash do
+    |player|
+    puts player['name']
+	
+	if rand(100) < 10
+
+    puts "*slithering and sucking noises*"
+	hp_dmg = rand(50)
+    mysql_bounded_update('users','hp',player['id'],-hp_dmg)
+
+    if hp_dmg != 0
+      mysql_put_message('action',
+       "$ACTOR, were attacked in night by a blood sucking slirth, and lost <b>#{hp_dmg} hp</b>",
+        player['id'], player['id'])
+    end
+	
+	else
+	
+	mysql_put_message('action',
+       "$ACTOR, just missed being attacked in night by a blood sucking slirth.</b>",
+        player['id'], player['id'])
+	end
+  end
+
+  "Environmental Damage!"
 end
 
 def tick_inactive
   query = "UPDATE `users` SET `active` = 0 " +
-  "WHERE lastaction < (NOW() - INTERVAL 5 DAY)"
+  "WHERE lastaction < (NOW() - INTERVAL 7 DAY)"
   $mysql.query(query)
-  'Inactive players!'
+  "Inactive players!"
 end
 
 def tick_move_animals
   animals = mysql_select_all('animals')
   animals.each_hash { |animal| move_animal(animal)}
-  'Animals moved!'
+  "Animals moved!"
+end
+
+def tick_attack_auto
+  animals = mysql_select_all('animals')
+  animals.each_hash { |animal| attack_auto(animal, user) }
+  "Animals attack!"
 end
 
 def tick_restore_ap
@@ -199,13 +240,13 @@ def tick_restore_ap
   users.each_hash {
     |user| mysql_change_ap(user['id'], ap_recovery(user['id']))
   }
-  'AP restored!'
+  "AP restored!"
 end
 
 def tick_restore_ip
   query = "UPDATE `ips` SET `hits` = '0'"
   $mysql.query(query)
-  'IP limits reset!'
+  "IP limits reset!"
 end
 
 def tick_restore_search
@@ -221,11 +262,11 @@ def tick_restore_search
 	    {'hp'=>1, 'terrain' => 1})
 	else
 	  mysql_bounded_update('grid','hp',
-	    {'x'=>tile['x'],'y'=>tile['y']}, +1, 4)
+	    {'x'=>tile['x'],'y'=>tile['y']}, +1, 3)
       end
     end
   }
-  'Search rates restored!'
+  "Search rates restored!"
 end
 
 def tick_delete_rotten_food
@@ -247,7 +288,7 @@ def tick_delete_rotten_food
       end
     end
   end
-  "And so the rotten food on the ground became dirt."
+  "And so the rotten food on the ground dissolved into the soil."
 end
 
 def tick_rot_food
@@ -308,7 +349,7 @@ def tick_spawn_animals
     end
     }
   }
-  'Animals spawned!'
+  "Animals spawned!"
 end
 
 def tick_terrain_transitions
@@ -330,7 +371,7 @@ def tick_terrain_transitions
         {'terrain' => terrain_id})
     end
   }
-  'Forests regrown!'
+  "Forests regrown"
 end
 
 def tick_delete_empty_data
@@ -339,5 +380,6 @@ def tick_delete_empty_data
   $mysql.query(query)
   query = "delete from `stockpiles` where `amount` = 0"
   $mysql.query(query)
+
   "Empty/unneeded DB data dumped!"
 end

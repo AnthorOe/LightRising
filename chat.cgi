@@ -1,19 +1,23 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
+# index.cgi
+print "Content-type: text/html\r\n\r\n"
+require 'rubygems'
 require 'cgi'
+require 'cgi/session'
 load 'functions.cgi'
 $cgi = CGI.new
 $params = $cgi.str_params
 
 def input_action(action)
   case action
-    when 'chat' then chat($user, $params['text'], $params['magic'])
+    when 'chat' then chat($user, $params['text'])
   end
 end
 
 
 UserID = get_validated_id
 if UserID != false
-  print "Content-type: text/html\r\n\r\n"
+  $header = {'cookie' => [$cookie], 'type' => 'text/html'}
 else
   puts $cgi.header('Location'=>'index.cgi?msg=bad_pw')
   exit
@@ -28,13 +32,16 @@ puts <<ENDTEXT
 <link rel="icon" 
       type="image/png" 
       href="images/favicon.ico">
-<link rel=\"stylesheet\" type=\"text/css\" href=\"shintolin.css\"/>
+<link rel=\"stylesheet\" type=\"text/css\" href=\"lightrising.css\"/>
 <title>Chat</title>
 
-<body>
+<body style="background:#cccccc">
+
+
+
 <a class="buttonlink" href="game.cgi">Return</a>
 <hr>
-#{html_chat_large(150)}
+#{html_chat_large(500)}
 </body>
 </html>
 ENDTEXT

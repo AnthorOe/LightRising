@@ -1,4 +1,7 @@
-#!/usr/bin/ruby
+#!C:\Ruby\bin\ruby.exe -w
+# index.cgi
+puts "Content-Type: text/html"
+require 'rubygems'
 require 'cgi'
 require 'cgi/session'
 load 'functions.cgi'
@@ -16,7 +19,7 @@ end
 puts $cgi.header($header)
 $user = User.new(UserID)
 
-if not [].include?($user.name) # use character names like ["Admin", "Buttercup"]
+if not ["Anthor"].include?($user.name)
 puts <<ENDTEXT
 You cannot edit the map.
 ENDTEXT
@@ -35,18 +38,14 @@ def input_action(action)
     when "east"
       $x = $x + ($size - 1)
 
-    when "location"
-      $y = $cgi['y'].to_i
-      $x = $cgi['x'].to_i
-
     when "edit"
       coords_re = /(-?[0-9]+),(-?[0-9]+)/
       $params.each do
         |name, value| 
-	coords = coords_re.match(name)
-	next if !coords
-	x, y = coords[1], coords[2]
-	update_tile(x, y, value)
+  coords = coords_re.match(name)
+  next if !coords
+  x, y = coords[1], coords[2]
+  update_tile(x, y, value)
       end
   end
 end
@@ -58,7 +57,7 @@ def update_tile(x, y, new_region)
     mysql_insert('grid',{'x'=>x,'y'=>y,
       'terrain'=>$params['option'].to_i,'region_id'=>new_region})
   else
-      if tile.region_id == new_region
+      if tile.region_id eq(new_region)
       nil
     else
       mysql_update('grid',{'x'=>x,'y'=>y},
@@ -93,18 +92,15 @@ Move_Forms =
   html_action_form('West',:inline,nil,'edit-region.cgi') {Hidden} +
   html_action_form('North',:inline,nil,'edit-region.cgi') {Hidden} +
   html_action_form('South',:inline,nil,'edit-region.cgi') {Hidden} +
-  html_action_form('East',:inline,nil,'edit-region.cgi') {Hidden} + " | " +
-  html_action_form('Goto Coordinates',:inline,nil,'edit-region.cgi') {
-  "X:<input type='text' class='text' name='x' maxlength='6' style='width:100px' value='#{$x}'> Y:<input type='text' class='text' name='y' maxlength='6' style='width:100px' value='#{$y}'>
-Don't use values beyond -32768 to 32767 (the database uses smallint for x and y)"}
+  html_action_form('East',:inline,nil,'edit-region.cgi') {Hidden}
 
 # terrains don't have names, so can't sort by names. Instead:
- Region_Select = "<input type='text' name='option' value='3'>" #3 is the default of wilderness/nothing
+ Region_Select = "<input type='text' name='option' value='3'>"
 
 puts <<ENDTEXT
 <html>
-<head><title>Shintolin - Edit Regions</title>
-<link rel="stylesheet" type="text/css" href="shintolin.css" />
+<head><title>Lightrising - Edit Regions</title>
+<link rel="stylesheet" type="text/css" href="lightrising.css" />
 </head>
 <body>
 <h1>Edit Regions</h1>
@@ -117,10 +113,8 @@ puts <<ENDTEXT
 <input type="hidden" name="action" value="edit" />
 #{Hidden}
  | #{Region_Select} <i>(Enter a default terrain type (integer). Does not affect exisiting tiles)</i>
- | See terrain.cgi for list of regions/terrains.
 <hr>
 #{Map}
 </body>
 </html>
 ENDTEXT
-

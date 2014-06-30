@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/local/bin/ruby -w
 #print "Content-type: text/html\r\n\r\n"
 require 'cgi'
 require 'cgi/session'
@@ -16,7 +16,7 @@ end
 puts $cgi.header($header)
 $user = User.new(UserID)
 
-if not ["Isaac","Woody","Admin","Buttercup","Miko"].include?($user.name)
+if not ["Anthor"].include?($user.name)
 puts <<ENDTEXT
 You are not allowed to print out a map.
 ENDTEXT
@@ -57,18 +57,20 @@ puts <<ENDTEXT
 ENDTEXT
   tile = mysql_row('grid',{'x'=>x,'y'=>y})
   if tile == nil
-			puts '938e4a '
+			puts '000000'
 	elsif tile['terrain'] == "1"
-puts '63a251 '
+puts '018D11'
 
 else 
   case tile['terrain']
 	when "1","4","24"
-	puts '63a251'
-	when "2","22"
-	puts '24531f'
+	puts '018D11'
+	when "2","6","7"
+	puts '1F6C17'
+	when "21","22","23"
+	puts '548E4D'
 	when "3"
-	puts '938e4a'
+	puts '000000'
 
 
 	when "5","52","55","151"
@@ -120,10 +122,64 @@ else
 	when "99"
 	puts 'b16c2b'
 
+	when "101"
+	puts 'FBC101'
 	when "110"
 	puts 'adac90'
 	when "152"
 	puts '475767'
+	
+	when "200","201","202","203","204"
+	puts 'C4C4C4'
+	when "205"
+	puts '767676'
+	when "206"
+	puts 'FF01EF'
+	when "207"
+	puts 'B088AD'
+	when "208","209","210","215","216","237","238"
+	puts 'FF9500'
+	
+	when "211","212","213","214"
+	puts '4F9283'
+	when "217"
+	puts "DF1E00"
+	when "218","219","220","221","222","223","224"
+	puts "5A5945"
+	
+	when "225"
+	puts "BF1B02"
+	when "226"
+	puts "D0C1BE"
+	
+	when "227"
+	puts "BCC9CD"
+	when "228"
+	puts "DAEBF0"
+	when "229"
+	puts "429AB7"
+	
+	when "230"
+	puts "C9F0EA"
+	when "231"
+	puts "C0EBE5"
+	when "232"
+	puts "B5E4DD"
+	when "233"
+	puts "D3E4E6"
+	when "234"
+	puts "B7D5D7"
+	when "235"
+	puts "ABD4D7"
+	when "236"
+	puts "9AC7CB"
+	
+	when "239","240","241","242","243","244"
+	puts "FF8409"
+	when "245"
+	puts "FFFEBB"
+	
+
 
 	else 
 	puts 'ffffff'
